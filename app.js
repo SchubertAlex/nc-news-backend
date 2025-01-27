@@ -1,9 +1,7 @@
 const express = require("express");
 const app = express();
-const endpoints = require("./endpoints.json");
+const { getEndpoints } = require("./controller/controller");
 
-app.get("/api", (req, res) => {
-  res.status(200).send({ endpoints });
-});
+app.get("/api", getEndpoints);
 
 module.exports = app;
