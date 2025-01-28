@@ -34,23 +34,60 @@ describe("GET /api/topics", () => {
       .then((response) => {
         const body = response.body;
 
-        expect(Array.isArray(body)).toBe(true);
-
-        for (const topic of body) {
+        expect(Array.isArray(body.topics)).toBe(true);
+        for (const topic of body.topics) {
           expect(Object.keys(topic)).toEqual(["slug", "description"]);
         }
-        expect(body).toEqual(testData.topicData);
+        expect(body.topics).toEqual(testData.topicData);
       });
   });
 });
 
-describe("Error Handling", () => {
-  test("404: incorrect endpoint", () => {
+describe("GET GET /api/articles/:article_id", () => {
+  test("200: Responds with an article object", () => {
     return request(app)
-      .get("/api/incorrect-endpoint")
-      .expect(404)
+      .get("/api/articles/3")
       .then((response) => {
-        expect(response.body.error).toBe("Endpoint not found");
+        const body = response.body;
+
+        const output = {
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        };
+
+        expect(body.article).toEqual(output);
       });
   });
+  test("404: article not found", () => {
+    return request(app)
+      .get("/api/articles/7227")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Article Not Found");
+      });
+  });
+  test("400: id is not a number", () => {
+    return request(app)
+      .get("/api/articles/shrek")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad Request");
+      });
+  });
+});
+
+test("404: incorrect endpoint", () => {
+  return request(app)
+    .get("/api/incorrect-endpoint")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.error).toBe("Endpoint Not Found");
+    });
 });
