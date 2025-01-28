@@ -5,6 +5,7 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data");
+const { sort } = require("../db/data/test-data/articles");
 
 /* Set up your beforeEach & afterAll functions here */
 beforeEach(() => {
@@ -43,7 +44,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: Responds with an article object", () => {
     return request(app)
       .get("/api/articles/3")
@@ -79,6 +80,39 @@ describe("GET GET /api/articles/:article_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.error).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("200: Responds with an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(Array.isArray(body.articles)).toBe(true);
+        for (const article of body.articles) {
+          expect(Object.keys(article)).toEqual([
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "article_img_url",
+            "comment_count",
+          ]);
+        }
+        expect(body.articles.length).toBe(13);
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+
+        const sortedArticlesByCommentCount = [...body.articles].sort(
+          (a, b) => b.comment_count - a.comment_count
+        );
+        expect(sortedArticlesByCommentCount[0].article_id).toBe(1);
+        expect(Number(sortedArticlesByCommentCount[1].comment_count)).toBe(2);
       });
   });
 });

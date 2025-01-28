@@ -20,11 +20,6 @@ function getTopics(req, res, next) {
 
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
-
-  if (isNaN(article_id)) {
-    return res.status(400).send({ error: "Bad Request" });
-  } // if parametric endpoint isn't a number, it is caught here and sent to the dynamic error handling middleware
-
   model
     .fetchArticleById(article_id)
     .then((article) => {
@@ -35,5 +30,16 @@ function getArticleById(req, res, next) {
     }); // if the promise rejects in the model, it is caught here and sent to the dynamic error handling middleware
 }
 
+function getArticles(req, res, next) {
+  model
+    .fetchArticles()
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 // EXPORTS:
-module.exports = { getEndpoints, getTopics, getArticleById };
+module.exports = { getEndpoints, getTopics, getArticleById, getArticles };
