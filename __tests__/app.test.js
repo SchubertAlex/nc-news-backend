@@ -25,3 +25,32 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test("200: Responds with an array of topic objects", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(Array.isArray(body)).toBe(true);
+
+        for (const topic of body) {
+          expect(Object.keys(topic)).toEqual(["slug", "description"]);
+        }
+        expect(body).toEqual(testData.topicData);
+      });
+  });
+});
+
+describe("Error Handling", () => {
+  test("404: incorrect endpoint", () => {
+    return request(app)
+      .get("/api/incorrect-endpoint")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Endpoint not found");
+      });
+  });
+});
