@@ -6,7 +6,9 @@ const controller = require("./controller/controller");
 // REQUESTS:
 app.get("/api", controller.getEndpoints);
 app.get("/api/topics", controller.getTopics);
+app.get("/api/articles", controller.getArticles);
 app.get("/api/articles/:article_id", controller.getArticleById);
+app.get("/api/articles/:article_id/comments", controller.getCommentsOfArticle);
 app.get("/api/articles", controller.getArticles);
 
 // ERROR-HANDLING MIDDLEWARE:

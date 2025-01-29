@@ -30,5 +30,25 @@ function fetchArticles() {
     });
 }
 
+function fetchComments(id) {
+  // first check if the article exists, for error-handling purposes:
+  return fetchArticleById(id).then(() => {
+    // this allows us to send a 200 if the article exists but it's an empty array (no comments)
+    return db
+      .query(
+        "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at",
+        [id]
+      )
+      .then((response) => {
+        return response.rows;
+      });
+  });
+}
+
 // EXPORTS:
-module.exports = { fetchTopics, fetchArticleById, fetchArticles };
+module.exports = {
+  fetchTopics,
+  fetchArticleById,
+  fetchArticles,
+  fetchComments,
+};

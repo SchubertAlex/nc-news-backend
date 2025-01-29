@@ -117,6 +117,59 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of comment objects for the specified article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        console.log(body);
+        expect(Array.isArray(body.comments)).toBe(true);
+        for (const comment of body.comments) {
+          expect(Object.keys(comment)).toEqual([
+            "comment_id",
+            "body",
+            "article_id",
+            "author",
+            "votes",
+            "created_at",
+          ]);
+        }
+        expect(body.comments.length).toBe(11);
+        expect(body.comments).toBeSortedBy("created_at");
+      });
+  });
+  test("200: responds with a custom message if the article is correct, but has no comments", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body).toEqual({
+          comments: "no comments for this article found",
+        });
+      });
+  });
+  test("404: article not found", () => {
+    return request(app)
+      .get("/api/articles/4000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Article Not Found");
+      });
+  });
+  test("400: id is not a number", () => {
+    return request(app)
+      .get("/api/articles/big-timer/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad Request");
+      });
+  });
+});
+
 test("404: incorrect endpoint", () => {
   return request(app)
     .get("/api/incorrect-endpoint")
