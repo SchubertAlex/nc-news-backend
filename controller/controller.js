@@ -45,7 +45,12 @@ function getCommentsOfArticle(req, res, next) {
   const { article_id } = req.params;
 
   model
-    .fetchComments(article_id)
+    // first, check the article exists:
+    .fetchArticleById(article_id)
+    .then(() => {
+      return model.fetchComments(article_id);
+    })
+    // then check if the article has comments:
     .then((comments) => {
       if (comments.length === 0) {
         res.status(200).send({ message: "no comments for this article found" });

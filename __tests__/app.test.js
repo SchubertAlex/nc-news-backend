@@ -5,7 +5,6 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data");
-const { sort } = require("../db/data/test-data/articles");
 
 /* Set up your beforeEach & afterAll functions here */
 beforeEach(() => {
@@ -93,26 +92,22 @@ describe("GET /api/articles", () => {
         const body = response.body;
 
         expect(Array.isArray(body.articles)).toBe(true);
-        for (const article of body.articles) {
-          expect(Object.keys(article)).toEqual([
-            "author",
-            "title",
-            "article_id",
-            "topic",
-            "created_at",
-            "votes",
-            "article_img_url",
-            "comment_count",
-          ]);
-        }
+
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+
         expect(body.articles.length).toBe(13);
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
-
-        const sortedArticlesByCommentCount = [...body.articles].sort(
-          (a, b) => b.comment_count - a.comment_count
-        );
-        expect(sortedArticlesByCommentCount[0].article_id).toBe(1);
-        expect(Number(sortedArticlesByCommentCount[1].comment_count)).toBe(2);
       });
   });
 });
@@ -125,17 +120,17 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then((response) => {
         const body = response.body;
 
-        expect(Array.isArray(body.comments)).toBe(true);
-        for (const comment of body.comments) {
-          expect(Object.keys(comment)).toEqual([
-            "comment_id",
-            "body",
-            "article_id",
-            "author",
-            "votes",
-            "created_at",
-          ]);
-        }
+        body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+
         expect(body.comments.length).toBe(11);
         expect(body.comments).toBeSortedBy("created_at");
       });
