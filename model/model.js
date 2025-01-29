@@ -20,5 +20,35 @@ function fetchArticleById(id) {
     });
 }
 
+function fetchArticles() {
+  return db
+    .query(
+      "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC"
+    )
+    .then((response) => {
+      return response.rows;
+    });
+}
+
+function fetchComments(id) {
+  // first check if the article exists, for error-handling purposes:
+  return fetchArticleById(id).then(() => {
+    // this allows us to send a 200 if the article exists but it's an empty array (no comments)
+    return db
+      .query(
+        "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at",
+        [id]
+      )
+      .then((response) => {
+        return response.rows;
+      });
+  });
+}
+
 // EXPORTS:
-module.exports = { fetchTopics, fetchArticleById };
+module.exports = {
+  fetchTopics,
+  fetchArticleById,
+  fetchArticles,
+  fetchComments,
+};
