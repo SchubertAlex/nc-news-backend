@@ -124,7 +124,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then((response) => {
         const body = response.body;
-        console.log(body);
+
         expect(Array.isArray(body.comments)).toBe(true);
         for (const comment of body.comments) {
           expect(Object.keys(comment)).toEqual([
@@ -148,7 +148,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         const body = response.body;
 
         expect(body).toEqual({
-          comments: "no comments for this article found",
+          message: "no comments for this article found",
         });
       });
   });

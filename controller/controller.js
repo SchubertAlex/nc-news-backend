@@ -48,17 +48,10 @@ function getCommentsOfArticle(req, res, next) {
     .fetchComments(article_id)
     .then((comments) => {
       if (comments.length === 0) {
-        res
-          .status(200)
-          .send({ comments: "no comments for this article found" });
+        res.status(200).send({ message: "no comments for this article found" });
+      } else {
+        res.status(200).send({ comments });
       }
-      res.status(200).send({ comments });
-    
-function getArticles(req, res, next) {
-  model
-    .fetchArticles()
-    .then((articles) => {
-      res.status(200).send({ articles });
     })
     .catch((err) => {
       next(err);
