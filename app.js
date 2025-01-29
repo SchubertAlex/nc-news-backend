@@ -9,6 +9,7 @@ app.get("/api/topics", controller.getTopics);
 app.get("/api/articles", controller.getArticles);
 app.get("/api/articles/:article_id", controller.getArticleById);
 app.get("/api/articles/:article_id/comments", controller.getCommentsOfArticle);
+app.get("/api/articles", controller.getArticles);
 
 // ERROR-HANDLING MIDDLEWARE:
 app.use((req, res) => {

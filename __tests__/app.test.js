@@ -5,6 +5,7 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data");
+const { sort } = require("../db/data/test-data/articles");
 
 /* Set up your beforeEach & afterAll functions here */
 beforeEach(() => {
@@ -43,7 +44,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: Responds with an article object", () => {
     return request(app)
       .get("/api/articles/3")
