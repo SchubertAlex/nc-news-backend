@@ -50,15 +50,20 @@ function addComment(article_id, username, body) {
     )
     .then((response) => {
       return response.rows[0];
-    })
-    .catch((err) => {
-      if (err.code === "23503") {
-        return Promise.reject({
-          status: 404,
-          message: "User Not Found",
-        });
-      }
-      return Promise.reject(err);
+    });
+}
+
+function updateArticleVotes(article_id, inc_votes) {
+  return db
+    .query(
+      `UPDATE articles
+     SET votes = votes + $1
+     WHERE article_id = $2
+     RETURNING *;`,
+      [inc_votes, article_id]
+    )
+    .then((result) => {
+      return result.rows[0];
     });
 }
 
@@ -69,4 +74,5 @@ module.exports = {
   fetchArticles,
   fetchComments,
   addComment,
+  updateArticleVotes,
 };

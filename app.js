@@ -11,9 +11,10 @@ app.get("/api/topics", controller.getTopics);
 app.get("/api/articles", controller.getArticles);
 app.get("/api/articles/:article_id", controller.getArticleById);
 app.get("/api/articles/:article_id/comments", controller.getCommentsOfArticle);
-app.get("/api/articles", controller.getArticles);
 
 app.post("/api/articles/:article_id/comments", controller.postComment);
+
+app.patch("/api/articles/:article_id", controller.patchArticleById);
 
 // ERROR-HANDLING MIDDLEWARE:
 app.use((req, res) => {
@@ -23,6 +24,14 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === "23502") {
     res.status(400).send({ error: "Bad Request" });
+  } else {
+    next(err);
+  }
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === "23503") {
+    res.status(404).send({ error: "User Not Found" });
   } else {
     next(err);
   }
