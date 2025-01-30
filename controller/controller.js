@@ -15,7 +15,7 @@ function getTopics(req, res, next) {
     })
     .catch((err) => {
       next(err);
-    }); // this sends any errors to the 500 middleware
+    });
 }
 
 function getArticles(req, res, next) {
@@ -38,7 +38,7 @@ function getArticleById(req, res, next) {
     })
     .catch((err) => {
       next(err);
-    }); // if the promise rejects in the model, it is caught here and sent to the dynamic error handling middleware
+    });
 }
 
 function getCommentsOfArticle(req, res, next) {
@@ -53,10 +53,27 @@ function getCommentsOfArticle(req, res, next) {
     // then check if the article has comments:
     .then((comments) => {
       if (comments.length === 0) {
-        res.status(200).send({ message: "no comments for this article found" });
+        res.status(200).send({ message: "No comments for this article found" });
       } else {
         res.status(200).send({ comments });
       }
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+function postComment(req, res, next) {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+
+  model
+    .fetchArticleById(article_id)
+    .then(() => {
+      return model.addComment(article_id, username, body);
+    })
+    .then((newComment) => {
+      res.status(201).send({ comment: newComment });
     })
     .catch((err) => {
       next(err);
@@ -70,4 +87,5 @@ module.exports = {
   getArticleById,
   getArticles,
   getCommentsOfArticle,
+  postComment,
 };

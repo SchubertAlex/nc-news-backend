@@ -8,9 +8,9 @@ function fetchTopics() {
   });
 }
 
-function fetchArticleById(id) {
+function fetchArticleById(article_id) {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [id])
+    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
     .then((response) => {
       if (response.rows.length === 0) {
         return Promise.reject({ status: 404, message: "Article Not Found" });
@@ -30,13 +30,35 @@ function fetchArticles() {
     });
 }
 
-function fetchComments(id) {
+function fetchComments(article_id) {
   return db
     .query("SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at", [
-      id,
+      article_id,
     ])
     .then((response) => {
       return response.rows;
+    });
+}
+
+function addComment(article_id, username, body) {
+  return db
+    .query(
+      `INSERT INTO comments (article_id, author, body) 
+       VALUES ($1, $2, $3) 
+       RETURNING *;`,
+      [article_id, username, body]
+    )
+    .then((response) => {
+      return response.rows[0];
+    })
+    .catch((err) => {
+      if (err.code === "23503") {
+        return Promise.reject({
+          status: 404,
+          message: "User Not Found",
+        });
+      }
+      return Promise.reject(err);
     });
 }
 
@@ -46,4 +68,5 @@ module.exports = {
   fetchArticleById,
   fetchArticles,
   fetchComments,
+  addComment,
 };
