@@ -67,6 +67,18 @@ function updateArticleVotes(article_id, inc_votes) {
     });
 }
 
+function deleteComment(comment_id) {
+  return db
+    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [
+      comment_id,
+    ])
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "Comment Not Found" });
+      }
+    });
+}
+
 // EXPORTS:
 module.exports = {
   fetchTopics,
@@ -75,4 +87,5 @@ module.exports = {
   fetchComments,
   addComment,
   updateArticleVotes,
+  deleteComment,
 };

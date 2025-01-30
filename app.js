@@ -16,6 +16,8 @@ app.post("/api/articles/:article_id/comments", controller.postComment);
 
 app.patch("/api/articles/:article_id", controller.patchArticleById);
 
+app.delete("/api/comments/:comment_id", controller.deleteComment);
+
 // ERROR-HANDLING MIDDLEWARE:
 app.use((req, res) => {
   res.status(404).send({ error: "Endpoint Not Found" });
