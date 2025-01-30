@@ -1,4 +1,5 @@
 // IMPORTS:
+const { proppatch } = require("../app");
 const endpoints = require("../endpoints.json");
 const model = require("../model/model");
 
@@ -67,6 +68,12 @@ function postComment(req, res, next) {
   const { article_id } = req.params;
   const { username, body } = req.body;
 
+  if (!username || !body) {
+    return res.status(400).send({
+      error: "Bad Request: Missing required fields / malformed input",
+    });
+  }
+
   model
     .fetchArticleById(article_id)
     .then(() => {
@@ -74,6 +81,23 @@ function postComment(req, res, next) {
     })
     .then((newComment) => {
       res.status(201).send({ comment: newComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+function patchArticleById(req, res, next) {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  model
+    .fetchArticleById(article_id)
+    .then(() => {
+      return model.updateArticleVotes(article_id, inc_votes);
+    })
+    .then((updatedArticle) => {
+      res.status(200).send({ article: updatedArticle });
     })
     .catch((err) => {
       next(err);
@@ -88,4 +112,5 @@ module.exports = {
   getArticles,
   getCommentsOfArticle,
   postComment,
+  patchArticleById,
 };
