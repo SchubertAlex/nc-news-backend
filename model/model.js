@@ -11,7 +11,11 @@ function fetchTopics() {
 function fetchArticles() {
   return db
     .query(
-      "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC"
+      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+      COUNT(comments.article_id) AS comment_count FROM articles 
+      LEFT JOIN comments ON articles.article_id = comments.article_id 
+      GROUP BY articles.article_id 
+      ORDER BY created_at DESC`
     )
     .then((response) => {
       return response.rows;
@@ -19,11 +23,9 @@ function fetchArticles() {
 }
 
 function fetchUsers() {
-  return db
-    .query("SELECT username, name, avatar_url FROM users;")
-    .then((response) => {
-      return response.rows;
-    });
+  return db.query("SELECT * FROM users").then((response) => {
+    return response.rows;
+  });
 }
 
 function fetchArticleById(article_id) {
@@ -53,7 +55,7 @@ function addComment(article_id, username, body) {
     .query(
       `INSERT INTO comments (article_id, author, body) 
        VALUES ($1, $2, $3) 
-       RETURNING *;`,
+       RETURNING *`,
       [article_id, username, body]
     )
     .then((response) => {
@@ -67,7 +69,7 @@ function updateArticleVotes(article_id, inc_votes) {
       `UPDATE articles
      SET votes = votes + $1
      WHERE article_id = $2
-     RETURNING *;`,
+     RETURNING *`,
       [inc_votes, article_id]
     )
     .then((result) => {
@@ -77,7 +79,7 @@ function updateArticleVotes(article_id, inc_votes) {
 
 function deleteComment(comment_id) {
   return db
-    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *;", [
+    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *", [
       comment_id,
     ])
     .then((response) => {

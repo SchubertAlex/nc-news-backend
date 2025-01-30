@@ -9,9 +9,9 @@ app.use(express.json());
 app.get("/api", controller.getEndpoints);
 app.get("/api/topics", controller.getTopics);
 app.get("/api/articles", controller.getArticles);
+app.get("/api/users", controller.getUsers);
 app.get("/api/articles/:article_id", controller.getArticleById);
 app.get("/api/articles/:article_id/comments", controller.getCommentsOfArticle);
-app.get("/api/users", controller.getUsers);
 
 app.post("/api/articles/:article_id/comments", controller.postComment);
 
