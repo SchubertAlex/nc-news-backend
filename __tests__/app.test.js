@@ -15,6 +15,15 @@ afterAll(() => {
   return db.end();
 });
 
+test("404: incorrect endpoint", () => {
+  return request(app)
+    .get("/api/incorrect-endpoint")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.error).toBe("Endpoint Not Found");
+    });
+});
+
 describe("GET /api", () => {
   test("200: Responds with an object detailing the documentation for each endpoint", () => {
     return request(app)
@@ -143,7 +152,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         const body = response.body;
 
         expect(body).toEqual({
-          message: "no comments for this article found",
+          message: "No comments for this article found",
         });
       });
   });
@@ -165,11 +174,51 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
-test("404: incorrect endpoint", () => {
-  return request(app)
-    .get("/api/incorrect-endpoint")
-    .expect(404)
-    .then((response) => {
-      expect(response.body.error).toBe("Endpoint Not Found");
-    });
+describe("POST /api/articles/:article_id/comments", () => {
+  it("should respond with a posted comment", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        username: "butter_bridge",
+        body: "I'm a butter boy!",
+      })
+      .expect(201)
+      .then((response) => {
+        console.log(response.body);
+        expect(response.body.comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            body: "I'm a butter boy!",
+            article_id: 3,
+            author: "butter_bridge",
+            votes: 0,
+          })
+        );
+      });
+  });
+  test("404: user not found", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "not_a_username",
+        body: "Why won't it let me post???",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("User Not Found");
+      });
+  });
+  test("400: missing required fields / malformed input", () => {
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send({
+        username: "butter_bridge",
+        comment:
+          "In order for this comment to post, I really should change the key name to 'body'",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad Request");
+      });
+  });
 });

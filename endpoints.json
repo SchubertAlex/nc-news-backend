@@ -64,5 +64,22 @@
       ]
     },
     "exampleResponse2": { "comments": "no comments for this article found" }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "recieves an object with the following properties: (username, body) -- serves an object of the posted comment to the appropriate article referenced in the endpoint",
+    "exampleInput": {
+      "username": "rogersop",
+      "body": "this is the comment I want to post"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "this is the comment I want to post",
+        "article_id": 3,
+        "author": "rogersop",
+        "votes": 0,
+        "created_at": "2025-01-30T11:12:12.311Z"
+      }
+    }
   }
 }
