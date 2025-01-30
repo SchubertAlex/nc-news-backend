@@ -8,6 +8,24 @@ function fetchTopics() {
   });
 }
 
+function fetchArticles() {
+  return db
+    .query(
+      "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC"
+    )
+    .then((response) => {
+      return response.rows;
+    });
+}
+
+function fetchUsers() {
+  return db
+    .query("SELECT username, name, avatar_url FROM users;")
+    .then((response) => {
+      return response.rows;
+    });
+}
+
 function fetchArticleById(article_id) {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
@@ -17,16 +35,6 @@ function fetchArticleById(article_id) {
       } else {
         return response.rows[0];
       }
-    });
-}
-
-function fetchArticles() {
-  return db
-    .query(
-      "SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC"
-    )
-    .then((response) => {
-      return response.rows;
     });
 }
 
@@ -82,8 +90,9 @@ function deleteComment(comment_id) {
 // EXPORTS:
 module.exports = {
   fetchTopics,
-  fetchArticleById,
   fetchArticles,
+  fetchUsers,
+  fetchArticleById,
   fetchComments,
   addComment,
   updateArticleVotes,

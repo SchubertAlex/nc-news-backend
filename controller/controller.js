@@ -30,6 +30,17 @@ function getArticles(req, res, next) {
     });
 }
 
+function getUsers(req, res, next) {
+  model
+    .fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
   model
@@ -121,8 +132,9 @@ function deleteComment(req, res, next) {
 module.exports = {
   getEndpoints,
   getTopics,
-  getArticleById,
   getArticles,
+  getUsers,
+  getArticleById,
   getCommentsOfArticle,
   postComment,
   patchArticleById,
