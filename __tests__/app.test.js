@@ -328,12 +328,7 @@ describe("PATCH /api/articles/:article_id", () => {
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: Successfully deletes the comment", () => {
-    return request(app)
-      .delete("/api/comments/1")
-      .expect(204)
-      .then((response) => {
-        expect(response.body).toEqual({});
-      });
+    return request(app).delete("/api/comments/1").expect(204);
   });
   test("404: Comment Not Found", () => {
     return request(app)
@@ -341,6 +336,14 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.error).toBe("Comment Not Found");
+      });
+  });
+  test("400: ID is not a number", () => {
+    return request(app)
+      .delete("/api/comments/not-a-number")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad Request");
       });
   });
 });

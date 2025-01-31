@@ -27,13 +27,7 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === "23502") {
     res.status(400).send({ error: "Bad Request" });
-  } else {
-    next(err);
-  }
-});
-
-app.use((err, req, res, next) => {
-  if (err.code === "23503") {
+  } else if (err.code === "23503") {
     res.status(404).send({ error: "User Not Found" });
   } else {
     next(err);
