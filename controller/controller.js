@@ -19,11 +19,18 @@ function getTopics(req, res, next) {
 }
 
 function getArticles(req, res, next) {
-  const { sort_by, order } = req.query;
+  const { sort_by, order, topic } = req.query;
 
   model
-    .fetchArticles(sort_by, order)
+    .fetchArticles(sort_by, order, topic)
     .then((articles) => {
+      // check if there is any articles for the queried topic:
+      if (articles.length === 0 && topic) {
+        return res
+          .status(200)
+          .send({ message: "No articles found for this topic" });
+      }
+
       res.status(200).send({ articles });
     })
     .catch((err) => {

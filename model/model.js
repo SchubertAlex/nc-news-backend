@@ -8,7 +8,7 @@ function fetchTopics() {
   });
 }
 
-function fetchArticles(sort_by = "created_at", order = "desc") {
+function fetchArticles(sort_by = "created_at", order = "desc", topic = null) {
   const validSortedBy = [
     "author",
     "title",
@@ -34,25 +34,33 @@ function fetchArticles(sort_by = "created_at", order = "desc") {
       sortColumn = "COUNT(comments.article_id)";
     }
 
-    return db
-      .query(
-        `SELECT 
-            articles.author, 
-            articles.title, 
-            articles.article_id, 
-            articles.topic, 
-            articles.created_at, 
-            articles.votes, 
-            articles.article_img_url, 
-            COUNT(comments.article_id) AS comment_count 
-        FROM articles 
-        LEFT JOIN comments ON articles.article_id = comments.article_id 
-        GROUP BY articles.article_id 
-        ORDER BY ${sortColumn} ${order}`
-      )
-      .then((response) => {
-        return response.rows;
-      });
+    let sqlString = `SELECT 
+      articles.author, 
+      articles.title, 
+      articles.article_id, 
+      articles.topic, 
+      articles.created_at, 
+      articles.votes, 
+      articles.article_img_url, 
+      COUNT(comments.article_id) AS comment_count 
+    FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id `;
+
+    if (topic) {
+      sqlString += ` WHERE articles.topic = $1`;
+    }
+
+    sqlString += ` GROUP BY articles.article_id 
+        ORDER BY ${sortColumn} ${order}`;
+
+    const queryParams = topic ? [topic] : [];
+
+    return db.query(sqlString, queryParams).then((response) => {
+      if (topic && response.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "Topic Not Found" });
+      }
+      return response.rows;
+    });
   }
 }
 

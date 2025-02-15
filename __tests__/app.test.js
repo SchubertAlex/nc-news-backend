@@ -403,7 +403,7 @@ describe("GET /api/articles (sorting queries)", () => {
   });
   test("400: Invalid sort_by query", () => {
     return request(app)
-      .get("/api/articles?sort_by=not_a_column")
+      .get("/api/articles?sort_by=not-a-column")
       .expect(400)
       .then((response) => {
         const body = response.body;
@@ -413,12 +413,36 @@ describe("GET /api/articles (sorting queries)", () => {
   });
   test("400: Invalid order query", () => {
     return request(app)
-      .get("/api/articles?order=not_valid")
+      .get("/api/articles?order=not-valid")
       .expect(400)
       .then((response) => {
         const body = response.body;
 
         expect(body.error).toBe("Invalid order query");
+      });
+  });
+});
+
+describe("GET /api/articles (topic query)", () => {
+  test("200: Responds with an array of articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+
+  test("404: Topic Not Found", () => {
+    return request(app)
+      .get("/api/articles?topic=not-a-topic")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Topic Not Found");
       });
   });
 });
