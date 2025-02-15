@@ -369,3 +369,56 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/articles (sorting queries)", () => {
+  test("200: Responds with an array of articles sorted by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: Responds with an array of articles sorted by title, in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body.articles).toBeSortedBy("title", { ascending: true });
+      });
+  });
+  test("200: Responds with an array of articles sorted by votes, in descending order by default", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("400: Invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=not_a_column")
+      .expect(400)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body.error).toBe("Invalid sort_by query");
+      });
+  });
+  test("400: Invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=not_valid")
+      .expect(400)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body.error).toBe("Invalid order query");
+      });
+  });
+});

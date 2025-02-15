@@ -8,25 +8,52 @@ function fetchTopics() {
   });
 }
 
-function fetchArticles() {
-  return db
-    .query(
-      `SELECT 
-          articles.author, 
-          articles.title, 
-          articles.article_id, 
-          articles.topic, 
-          articles.created_at, 
-          articles.votes, 
-          articles.article_img_url, 
-      COUNT(comments.article_id) AS comment_count FROM articles 
-      LEFT JOIN comments ON articles.article_id = comments.article_id 
-      GROUP BY articles.article_id 
-      ORDER BY created_at DESC`
-    )
-    .then((response) => {
-      return response.rows;
-    });
+function fetchArticles(sort_by = "created_at", order = "desc") {
+  const validSortedBy = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const validOrderedBy = ["asc", "desc"];
+
+  if (!validSortedBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, message: "Invalid sort_by query" });
+  }
+  if (!validOrderedBy.includes(order)) {
+    return Promise.reject({ status: 400, message: "Invalid order query" });
+  }
+
+  if (validSortedBy.includes(sort_by) && validOrderedBy.includes(order)) {
+    let sortColumn = `articles.${sort_by}`;
+
+    if (sort_by === "comment_count") {
+      sortColumn = "COUNT(comments.article_id)";
+    }
+
+    return db
+      .query(
+        `SELECT 
+            articles.author, 
+            articles.title, 
+            articles.article_id, 
+            articles.topic, 
+            articles.created_at, 
+            articles.votes, 
+            articles.article_img_url, 
+            COUNT(comments.article_id) AS comment_count 
+        FROM articles 
+        LEFT JOIN comments ON articles.article_id = comments.article_id 
+        GROUP BY articles.article_id 
+        ORDER BY ${sortColumn} ${order}`
+      )
+      .then((response) => {
+        return response.rows;
+      });
+  }
 }
 
 function fetchUsers() {
