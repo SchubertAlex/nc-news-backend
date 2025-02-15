@@ -65,6 +65,7 @@ describe("GET /api/articles/:article_id", () => {
           topic: "mitch",
           author: "icellusedkars",
           body: "some gifs",
+          comment_count: "2",
           created_at: "2020-11-03T09:12:00.000Z",
           votes: 0,
           article_img_url:
@@ -443,6 +444,30 @@ describe("GET /api/articles (topic query)", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.error).toBe("Topic Not Found");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id (comment_count)", () => {
+  test("200: Responds with an article object including comment_count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+
+        expect(body.article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(String),
+        });
+        expect(body.article.comment_count).toBe("11");
       });
   });
 });
