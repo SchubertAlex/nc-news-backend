@@ -1,84 +1,177 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Serves a JSON representation of all available endpoints... (*THIS* document you're reading right now!)."
   },
+
   "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
-    "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
-    }
-  },
-  "GET /api/articles": {
-    "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
-    "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 0,
-          "comment_count": 6
-        }
-      ]
-    }
-  },
-  "GET /api/articles/:article_id": {
-    "description": "serves an object of the relevant article that is provided with the parametric endpoint",
-    "exampleResponse": {
-      "article": {
-        "article_id": 3,
-        "title": "Eight pug gifs that remind me of mitch",
-        "topic": "mitch",
-        "author": "icellusedkars",
-        "body": "some gifs",
-        "created_at": "2020-11-03T09:12:00.000Z",
-        "votes": 0,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    "description": "Returns an array of all topics.",
+    "response": {
+      "status": 200,
+      "body": {
+        "topics": [{ "slug": "football", "description": "Footie!" }]
       }
     }
   },
-  "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of the comments of the relevant article that is provided with the parametric endpoint OR... a custom message if the article does not have any comments",
-    "exampleResponse1": {
-      "comments": [
-        {
-          "comment_id": 10,
-          "body": "git push origin master",
-          "article_id": 3,
-          "author": "icellusedkars",
-          "votes": 0,
-          "created_at": "2020-06-20T07:24:00.000Z"
-        },
-        {
-          "comment_id": 11,
-          "body": "Ambidextrous marsupial",
-          "article_id": 3,
-          "author": "icellusedkars",
-          "votes": 0,
-          "created_at": "2020-09-19T23:10:00.000Z"
-        }
-      ]
+
+  "GET /api/articles": {
+    "description": "Returns an array of all articles.",
+    "queryParameters": {
+      "topic": "Filters articles by the specified topic; (optional).",
+      "sort_by": "Sorts articles by the specified column; (default: created_at).",
+      "order": "Orders articles in ascending (asc) or descending (desc) order; (default: desc)."
     },
-    "exampleResponse2": { "comments": "no comments for this article found" }
+    "response": {
+      "status": 200,
+      "body": {
+        "articles": [
+          {
+            "article_id": 1,
+            "title": "Example Article",
+            "topic": "mitch",
+            "author": "butter_bridge",
+            "body": "This is an example article.",
+            "created_at": "2023-10-01T00:00:00.000Z",
+            "votes": 100,
+            "article_img_url": "https://example.com/image.jpg",
+            "comment_count": 11
+          },
+          {
+            "article_id": 3,
+            "title": "Eight pug gifs that remind me of mitch",
+            "topic": "mitch",
+            "author": "icellusedkars",
+            "body": "some gifs",
+            "created_at": "2020-11-03T09:12:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": 24
+          }
+        ]
+      }
+    }
   },
-  "POST /api/articles/:article_id/comments": {
-    "description": "recieves an object with the following properties: (username, body) -- serves an object of the posted comment to the appropriate article referenced in the endpoint",
-    "exampleInput": {
-      "username": "rogersop",
-      "body": "this is the comment I want to post"
+
+  "GET /api/articles/:article_id": {
+    "description": "Returns a single article object with the specified article_id",
+    "response": {
+      "status": 200,
+      "body": {
+        "article": {
+          "article_id": 3,
+          "title": "Eight pug gifs that remind me of mitch",
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "body": "some gifs",
+          "created_at": "2020-11-03T09:12:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 24
+        }
+      }
+    }
+  },
+
+  "GET /api/articles/:article_id/comments": {
+    "description": "Returns an array of comments for the specified article_id.",
+    "response": {
+      "status": 200,
+      "body": {
+        "comments": [
+          {
+            "comment_id": 10,
+            "body": "git push origin master",
+            "article_id": 3,
+            "author": "icellusedkars",
+            "votes": 0,
+            "created_at": "2020-06-20T07:24:00.000Z"
+          },
+          {
+            "comment_id": 11,
+            "body": "Ambidextrous marsupial",
+            "article_id": 3,
+            "author": "icellusedkars",
+            "votes": 0,
+            "created_at": "2020-09-19T23:10:00.000Z"
+          }
+        ]
+      }
     },
-    "exampleResponse": {
-      "comment": {
-        "comment_id": 19,
-        "body": "this is the comment I want to post",
-        "article_id": 3,
-        "author": "rogersop",
-        "votes": 0,
-        "created_at": "2025-01-30T11:12:12.311Z"
+    "responseNoComments": {
+      "status": 200,
+      "body": {
+        "message": "no comments for this article found"
+      }
+    }
+  },
+
+  "POST /api/articles/:article_id/comments": {
+    "description": "Adds a new comment to the specified article_id.",
+    "requestBody": {
+      "username": "*The username of the comment author*",
+      "body": "*Your comment here*"
+    },
+    "response": {
+      "status": 201,
+      "body": {
+        "comment": {
+          "comment_id": 19,
+          "body": "*Your comment here*",
+          "article_id": 3,
+          "author": "*The username of the comment author*",
+          "votes": 0,
+          "created_at": "2025-01-30T11:12:12.311Z"
+        }
+      }
+    }
+  },
+
+  "PATCH /api/articles/:article_id": {
+    "description": "Updates the vote count of the specified article_id.",
+    "requestBody": {
+      "inc_votes": 100
+    },
+    "response": {
+      "status": 200,
+      "body": {
+        "article": {
+          "article_id": 1,
+          "title": "Example Article",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "This is an example article.",
+          "created_at": "2023-10-01T00:00:00.000Z",
+          "votes": 110,
+          "article_img_url": "https://example.com/image.jpg",
+          "comment_count": 11
+        }
+      }
+    }
+  },
+
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the specified comment by comment_id.",
+    "response": {
+      "status": 204
+    }
+  },
+
+  "GET /api/users": {
+    "description": "Returns an array of all users.",
+    "response": {
+      "status": 200,
+      "body": {
+        "users": [
+          {
+            "username": "butter_bridge",
+            "name": "jonny",
+            "avatar_url": "https://example.com/avatar.jpg"
+          },
+          {
+            "username": "bigtimer",
+            "name": "alex",
+            "avatar_url": "https://example.com/avatar2.jpg"
+          }
+        ]
       }
     }
   }
