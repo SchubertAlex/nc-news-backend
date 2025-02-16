@@ -20,7 +20,7 @@ The NC News API powers a news aggregation platform, similar to Reddit. It allows
 The API is built with a focus on RESTful principles and includes features like:
 
 - **Filtering**: Articles can be filtered by topic.
-- **Sorting**: Articles can be sorted by any valid column (e.g., `created_at`, `votes`).
+- **Sorting**: Articles can be sorted by any valid column (e.g. `created_at`, `votes`).
 - **Pagination**: Coming soon!
 
 ## Getting Started
