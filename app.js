@@ -2,7 +2,9 @@
 const express = require("express");
 const app = express();
 const controller = require("./controller/controller");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 // REQUESTS:
